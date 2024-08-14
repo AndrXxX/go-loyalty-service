@@ -2,13 +2,13 @@ package app
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
 	"github.com/AndrXxX/go-loyalty-service/internal/config"
 	"github.com/AndrXxX/go-loyalty-service/internal/services/logger"
 	"github.com/go-chi/chi/v5"
 	"go.uber.org/zap"
+	"gorm.io/gorm"
 	"log"
 	"net/http"
 	"time"
@@ -21,17 +21,17 @@ type app struct {
 		c *config.Config
 	}
 	storage struct {
-		db *sql.DB
+		db *gorm.DB
 	}
 }
 
-func New(c *config.Config, db *sql.DB) *app {
+func New(c *config.Config, db *gorm.DB) *app {
 	return &app{
 		config: struct {
 			c *config.Config
 		}{c},
 		storage: struct {
-			db *sql.DB
+			db *gorm.DB
 		}{db},
 	}
 }
@@ -65,7 +65,8 @@ func (a *app) Run(commonCtx context.Context) error {
 	shutdown := make(chan struct{}, 1)
 	go func() {
 		if a.storage.db != nil {
-			_ = a.storage.db.Close()
+			db, _ := a.storage.db.DB()
+			_ = db.Close()
 		}
 		shutdown <- struct{}{}
 	}()
