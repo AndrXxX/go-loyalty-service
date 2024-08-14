@@ -22,21 +22,26 @@ type app struct {
 	}
 	storage struct {
 		db *gorm.DB
+		m  migrator
 	}
 }
 
-func New(c *config.Config, db *gorm.DB) *app {
+func New(c *config.Config, db *gorm.DB, m migrator) *app {
 	return &app{
 		config: struct {
 			c *config.Config
 		}{c},
 		storage: struct {
 			db *gorm.DB
-		}{db},
+			m  migrator
+		}{db, m},
 	}
 }
 
 func (a *app) Run(commonCtx context.Context) error {
+	if err := a.storage.m.Migrate(commonCtx, a.storage.db); err != nil {
+		return err
+	}
 
 	r := chi.NewRouter()
 
