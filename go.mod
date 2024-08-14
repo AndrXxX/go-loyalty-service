@@ -3,6 +3,7 @@ module github.com/AndrXxX/go-loyalty-service
 go 1.22.2
 
 require (
+	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
 	github.com/caarlos0/env/v6 v6.10.1
 	github.com/stretchr/testify v1.9.0
 	go.uber.org/zap v1.27.0
