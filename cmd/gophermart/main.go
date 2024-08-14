@@ -2,11 +2,12 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"github.com/AndrXxX/go-loyalty-service/internal/app"
 	"github.com/AndrXxX/go-loyalty-service/internal/config"
+	"github.com/AndrXxX/go-loyalty-service/internal/services/dbprovider"
 	"github.com/AndrXxX/go-loyalty-service/internal/services/logger"
 	"github.com/asaskevich/govalidator"
+	"go.uber.org/zap"
 	"log"
 	"os/signal"
 	"syscall"
@@ -25,9 +26,11 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
-	var db *sql.DB // TODO
-	a := app.New(settings, db)
-	if err := a.Run(ctx); err != nil {
+	db, err := dbprovider.New(settings).DB()
+	if err != nil {
+		logger.Log.Error("failed to connect to database", zap.Error(err))
+	}
+	if err := app.New(settings, db).Run(ctx); err != nil {
 		logger.Log.Fatal(err.Error())
 	}
 }
