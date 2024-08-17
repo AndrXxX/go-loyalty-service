@@ -5,4 +5,5 @@ type Config struct {
 	LogLevel             string `valid:"in(debug|info|warn|error|fatal)"`
 	DatabaseURI          string
 	AccrualSystemAddress string
+	AuthKey              string
 }
