@@ -5,8 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"github.com/AndrXxX/go-loyalty-service/internal/config"
+	"github.com/AndrXxX/go-loyalty-service/internal/controllers"
+	"github.com/AndrXxX/go-loyalty-service/internal/middlewares"
 	"github.com/AndrXxX/go-loyalty-service/internal/services/logger"
+	"github.com/AndrXxX/go-loyalty-service/internal/services/tokenservice"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 	"log"
@@ -44,8 +48,9 @@ func (a *app) Run(commonCtx context.Context) error {
 	}
 
 	r := chi.NewRouter()
-
-	// TODO: realise routes
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+	a.registerAPI(r)
 
 	srv := &http.Server{Addr: a.config.c.RunAddress, Handler: r}
 
@@ -84,4 +89,29 @@ func (a *app) Run(commonCtx context.Context) error {
 	}
 
 	return nil
+}
+
+func (a *app) registerAPI(r *chi.Mux) {
+	r.Post("/api/user/register", controllers.NewAuthController().Register)
+	r.Post("/api/user/login", controllers.NewAuthController().Login)
+
+	r.Route("/api/user", func(r chi.Router) {
+		ts := tokenservice.New(a.config.c.AuthKey, time.Duration(a.config.c.AuthKeyExpired)*time.Second)
+		r.Use(middlewares.IsAuthorized(ts).Handle)
+
+		r.Route("/orders", func(r chi.Router) {
+			r.Post("/", controllers.NewOrdersController().PostOrders)
+			r.Get("/", controllers.NewOrdersController().GetOrders)
+		})
+
+		r.Route("/balance", func(r chi.Router) {
+			r.Get("/", controllers.NewBalanceController().Balance)
+			r.Post("/withdraw", controllers.NewBalanceController().Withdraw)
+		})
+
+		r.Route("/withdrawals", func(r chi.Router) {
+			r.Get("/", controllers.NewBalanceController().Withdrawals)
+		})
+	})
+
 }
