@@ -12,6 +12,7 @@ type EnvConfig struct {
 	DatabaseURI          string `env:"DATABASE_URI"`
 	AccrualSystemAddress string `env:"ACCRUAL_SYSTEM_ADDRESS"`
 	AuthKey              string `env:"AUTH_SECRET_KEY"`
+	AuthKeyExpired       int    `env:"AUTH_SECRET_KEY_EXPIRED"`
 }
 
 func parseEnv(c *config.Config) {
@@ -20,6 +21,7 @@ func parseEnv(c *config.Config) {
 		DatabaseURI:          c.DatabaseURI,
 		AccrualSystemAddress: c.AccrualSystemAddress,
 		AuthKey:              c.AuthKey,
+		AuthKeyExpired:       c.AuthKeyExpired,
 	}
 	err := env.Parse(&cfg)
 	if err != nil {
@@ -30,4 +32,5 @@ func parseEnv(c *config.Config) {
 	c.DatabaseURI = cfg.DatabaseURI
 	c.AccrualSystemAddress = cfg.AccrualSystemAddress
 	c.AuthKey = cfg.AuthKey
+	c.AuthKeyExpired = cfg.AuthKeyExpired
 }

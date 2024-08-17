@@ -6,4 +6,5 @@ type Config struct {
 	DatabaseURI          string
 	AccrualSystemAddress string
 	AuthKey              string
+	AuthKeyExpired       int
 }

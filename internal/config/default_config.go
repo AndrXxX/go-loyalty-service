@@ -11,5 +11,6 @@ func NewConfig() *Config {
 		DatabaseURI:          "",
 		AccrualSystemAddress: "",
 		AuthKey:              "auth-secret-key",
+		AuthKeyExpired:       defaults.AuthKeyExpired,
 	}
 }
