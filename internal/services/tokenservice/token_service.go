@@ -1,4 +1,4 @@
-package token
+package tokenservice
 
 import (
 	"fmt"
@@ -6,7 +6,6 @@ import (
 	"time"
 )
 
-// Claims — структура утверждений, которая включает стандартные утверждения и
 type claims struct {
 	jwt.RegisteredClaims
 	UserID uint

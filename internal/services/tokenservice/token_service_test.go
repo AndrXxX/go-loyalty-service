@@ -1,4 +1,4 @@
-package token
+package tokenservice
 
 import (
 	"github.com/stretchr/testify/assert"
