@@ -20,7 +20,7 @@ func New(key string, expired time.Duration) *tokenService {
 	return &tokenService{key, expired}
 }
 
-func (ts *tokenService) Crypt(userID uint) (token string, err error) {
+func (ts *tokenService) Encrypt(userID uint) (token string, err error) {
 	t := jwt.NewWithClaims(jwt.SigningMethodHS256, claims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(ts.expired)),

@@ -66,7 +66,7 @@ func TestTokenService(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ts := New(tt.fields.key, tt.fields.expired)
-			token, err := ts.Crypt(tt.userID)
+			token, err := ts.Encrypt(tt.userID)
 			userId, err := ts.Decrypt(token)
 			assert.Equal(t, tt.userID, userId)
 			assert.Equal(t, tt.wantErr, err != nil)
