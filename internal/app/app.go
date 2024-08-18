@@ -7,6 +7,7 @@ import (
 	"github.com/AndrXxX/go-loyalty-service/internal/config"
 	"github.com/AndrXxX/go-loyalty-service/internal/controllers"
 	"github.com/AndrXxX/go-loyalty-service/internal/middlewares"
+	"github.com/AndrXxX/go-loyalty-service/internal/services/hashgenerator"
 	"github.com/AndrXxX/go-loyalty-service/internal/services/logger"
 	"github.com/AndrXxX/go-loyalty-service/internal/services/tokenservice"
 	"github.com/go-chi/chi/v5"
@@ -77,8 +78,9 @@ func (a *app) Run(commonCtx context.Context) error {
 }
 
 func (a *app) registerAPI(r *chi.Mux) {
-	r.Post("/api/user/register", controllers.NewAuthController(a.storage.US).Register)
-	r.Post("/api/user/login", controllers.NewAuthController(a.storage.US).Login)
+	hg := hashgenerator.Factory().SHA256(a.config.c.PasswordKey)
+	r.Post("/api/user/register", controllers.NewAuthController(a.storage.US, hg).Register)
+	r.Post("/api/user/login", controllers.NewAuthController(a.storage.US, hg).Login)
 
 	r.Route("/api/user", func(r chi.Router) {
 		ts := tokenservice.New(a.config.c.AuthKey, time.Duration(a.config.c.AuthKeyExpired)*time.Second)

@@ -12,10 +12,11 @@ import (
 
 type authController struct {
 	us interfaces.UserService
+	hg interfaces.HashGenerator
 }
 
-func NewAuthController(us interfaces.UserService) *authController {
-	return &authController{us}
+func NewAuthController(us interfaces.UserService, hg interfaces.HashGenerator) *authController {
+	return &authController{us, hg}
 }
 
 func (c *authController) Register(w http.ResponseWriter, r *http.Request) {
@@ -32,8 +33,7 @@ func (c *authController) Register(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusConflict)
 		return
 	}
-	// TODO: hash password
-	orm := ormmodels.User{Login: u.Login, Password: u.Password}
+	orm := ormmodels.User{Login: u.Login, Password: c.hg.Generate([]byte(u.Password))}
 	_, err = c.us.Create(&orm)
 	if err != nil {
 		w.WriteHeader(http.StatusConflict)
