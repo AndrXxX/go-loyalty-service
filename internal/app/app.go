@@ -77,8 +77,8 @@ func (a *app) Run(commonCtx context.Context) error {
 }
 
 func (a *app) registerAPI(r *chi.Mux) {
-	r.Post("/api/user/register", controllers.NewAuthController().Register)
-	r.Post("/api/user/login", controllers.NewAuthController().Login)
+	r.Post("/api/user/register", controllers.NewAuthController(a.storage.US).Register)
+	r.Post("/api/user/login", controllers.NewAuthController(a.storage.US).Login)
 
 	r.Route("/api/user", func(r chi.Router) {
 		ts := tokenservice.New(a.config.c.AuthKey, time.Duration(a.config.c.AuthKeyExpired)*time.Second)
