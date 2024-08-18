@@ -57,6 +57,34 @@ func (c *authController) Register(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func (c *authController) Login(_ http.ResponseWriter, _ *http.Request) {
-	// TODO
+func (c *authController) Login(w http.ResponseWriter, r *http.Request) {
+	var u *entities.User
+	dec := json.NewDecoder(r.Body)
+	err := dec.Decode(&u)
+	if err != nil {
+		logger.Log.Error("failed to decode login request", zap.Error(err))
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if _, err := govalidator.ValidateStruct(u); err != nil {
+		logger.Log.Error("failed to validate on login request", zap.Error(err))
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	exist := c.us.Find(u.Login)
+	if exist == nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	if exist.Password != c.hg.Generate([]byte(u.Password)) {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	token, err := c.ts.Encrypt(exist.ID)
+	if err != nil {
+		logger.Log.Error("failed to encrypt token on login request", zap.Error(err))
+		return
+	}
+	r.AddCookie(&http.Cookie{Name: enums.AuthToken, Value: token})
+	w.WriteHeader(http.StatusOK)
 }
