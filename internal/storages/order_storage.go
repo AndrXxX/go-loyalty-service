@@ -10,9 +10,8 @@ type orderStorage struct {
 	db *gorm.DB
 }
 
-func (s *orderStorage) Find(number string) *ormmodels.Order {
-	var m *ormmodels.Order
-	result := s.db.Model(ormmodels.Order{Number: number}).First(m)
+func (s *orderStorage) Find(m *ormmodels.Order) *ormmodels.Order {
+	result := s.db.Model(m).First(m)
 	if result.Error != nil {
 		return nil
 	}
