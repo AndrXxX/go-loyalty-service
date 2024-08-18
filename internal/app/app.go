@@ -81,25 +81,28 @@ func (a *app) registerAPI(r *chi.Mux) {
 	hg := hashgenerator.Factory().SHA256(a.config.c.PasswordKey)
 	ts := tokenservice.New(a.config.c.AuthKey, time.Duration(a.config.c.AuthKeyExpired)*time.Second)
 
-	r.Post("/api/user/register", controllers.NewAuthController(a.storage.US, hg, ts).Register)
-	r.Post("/api/user/login", controllers.NewAuthController(a.storage.US, hg, ts).Login)
+	ac := controllers.NewAuthController(a.storage.US, hg, ts)
+	r.Post("/api/user/register", ac.Register)
+	r.Post("/api/user/login", ac.Login)
 
 	r.Route("/api/user", func(r chi.Router) {
 
 		r.Use(middlewares.IsAuthorized(ts).Handle)
 
 		r.Route("/orders", func(r chi.Router) {
-			r.Post("/", controllers.NewOrdersController().PostOrders)
-			r.Get("/", controllers.NewOrdersController().GetOrders)
+			oc := controllers.NewOrdersController()
+			r.Post("/", oc.PostOrders)
+			r.Get("/", oc.GetOrders)
 		})
 
+		bc := controllers.NewBalanceController()
 		r.Route("/balance", func(r chi.Router) {
-			r.Get("/", controllers.NewBalanceController().Balance)
-			r.Post("/withdraw", controllers.NewBalanceController().Withdraw)
+			r.Get("/", bc.Balance)
+			r.Post("/withdraw", bc.Withdraw)
 		})
 
 		r.Route("/withdrawals", func(r chi.Router) {
-			r.Get("/", controllers.NewBalanceController().Withdrawals)
+			r.Get("/", bc.Withdrawals)
 		})
 	})
 
