@@ -5,6 +5,6 @@ import (
 )
 
 type UserService interface {
-	Find(login string) *ormmodels.User
+	Find(u *ormmodels.User) *ormmodels.User
 	Create(u *ormmodels.User) (*ormmodels.User, error)
 }

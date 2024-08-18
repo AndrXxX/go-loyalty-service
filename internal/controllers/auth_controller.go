@@ -28,7 +28,7 @@ func (c *authController) Register(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	exist := c.us.Find(u.Login)
+	exist := c.us.Find(&ormmodels.User{Login: u.Login})
 	if exist != nil {
 		w.WriteHeader(http.StatusConflict)
 		return
@@ -52,7 +52,7 @@ func (c *authController) Login(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	exist := c.us.Find(u.Login)
+	exist := c.us.Find(&ormmodels.User{Login: u.Login})
 	if exist == nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		return

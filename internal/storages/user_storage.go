@@ -10,9 +10,8 @@ type userStorage struct {
 	db *gorm.DB
 }
 
-func (s *userStorage) Find(login string) *ormmodels.User {
-	var u *ormmodels.User
-	result := s.db.Model(ormmodels.User{Login: login}).First(u)
+func (s *userStorage) Find(u *ormmodels.User) *ormmodels.User {
+	result := s.db.Model(u).First(u)
 	if result.Error != nil {
 		return nil
 	}
