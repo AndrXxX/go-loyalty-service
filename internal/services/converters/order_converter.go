@@ -17,7 +17,7 @@ func (c orderConverter) Convert(m *ormmodels.Order) *entities.Order {
 		Number:    m.Number,
 		Status:    m.Status,
 		Accrual:   m.Accrual,
-		CreatedAt: m.CreatedAt,
+		CreatedAt: entities.RFC3339Time{Time: m.CreatedAt},
 	}
 }
 
