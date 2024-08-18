@@ -12,7 +12,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"go.uber.org/zap"
-	"gorm.io/gorm"
 	"log"
 	"net/http"
 	"time"
@@ -21,32 +20,18 @@ import (
 const shutdownTimeout = 5 * time.Second
 
 type app struct {
-	config struct {
-		c *config.Config
-	}
-	storage struct {
-		db *gorm.DB
-		m  migrator
-	}
+	config  appConfig
+	storage Storage
 }
 
-func New(c *config.Config, db *gorm.DB, m migrator) *app {
+func New(c *config.Config, s Storage) *app {
 	return &app{
-		config: struct {
-			c *config.Config
-		}{c},
-		storage: struct {
-			db *gorm.DB
-			m  migrator
-		}{db, m},
+		config:  appConfig{c},
+		storage: s,
 	}
 }
 
 func (a *app) Run(commonCtx context.Context) error {
-	if err := a.storage.m.Migrate(commonCtx, a.storage.db); err != nil {
-		return err
-	}
-
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
@@ -74,8 +59,8 @@ func (a *app) Run(commonCtx context.Context) error {
 
 	shutdown := make(chan struct{}, 1)
 	go func() {
-		if a.storage.db != nil {
-			db, _ := a.storage.db.DB()
+		if a.storage.DB != nil {
+			db, _ := a.storage.DB.DB()
 			_ = db.Close()
 		}
 		shutdown <- struct{}{}

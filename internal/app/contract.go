@@ -1,10 +1,16 @@
 package app
 
 import (
-	"context"
+	"github.com/AndrXxX/go-loyalty-service/internal/config"
+	"github.com/AndrXxX/go-loyalty-service/internal/interfaces"
 	"gorm.io/gorm"
 )
 
-type migrator interface {
-	Migrate(ctx context.Context, db *gorm.DB) error
+type appConfig struct {
+	c *config.Config
+}
+
+type Storage struct {
+	DB *gorm.DB
+	US interfaces.UserStorage
 }

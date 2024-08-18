@@ -5,8 +5,8 @@ import (
 	"github.com/AndrXxX/go-loyalty-service/internal/app"
 	"github.com/AndrXxX/go-loyalty-service/internal/config"
 	"github.com/AndrXxX/go-loyalty-service/internal/services/dbprovider"
-	"github.com/AndrXxX/go-loyalty-service/internal/services/gormmigrator"
 	"github.com/AndrXxX/go-loyalty-service/internal/services/logger"
+	"github.com/AndrXxX/go-loyalty-service/internal/storages"
 	"github.com/asaskevich/govalidator"
 	"go.uber.org/zap"
 	"log"
@@ -31,7 +31,12 @@ func main() {
 	if err != nil {
 		logger.Log.Error("failed to connect to database", zap.Error(err))
 	}
-	if err := app.New(settings, db, gormmigrator.New()).Run(ctx); err != nil {
+	sf := storages.Factory(db)
+	s := app.Storage{
+		DB: db,
+		US: sf.UserStorage(ctx),
+	}
+	if err := app.New(settings, s).Run(ctx); err != nil {
 		logger.Log.Fatal(err.Error())
 	}
 }
