@@ -79,11 +79,13 @@ func (a *app) Run(commonCtx context.Context) error {
 
 func (a *app) registerAPI(r *chi.Mux) {
 	hg := hashgenerator.Factory().SHA256(a.config.c.PasswordKey)
-	r.Post("/api/user/register", controllers.NewAuthController(a.storage.US, hg).Register)
-	r.Post("/api/user/login", controllers.NewAuthController(a.storage.US, hg).Login)
+	ts := tokenservice.New(a.config.c.AuthKey, time.Duration(a.config.c.AuthKeyExpired)*time.Second)
+
+	r.Post("/api/user/register", controllers.NewAuthController(a.storage.US, hg, ts).Register)
+	r.Post("/api/user/login", controllers.NewAuthController(a.storage.US, hg, ts).Login)
 
 	r.Route("/api/user", func(r chi.Router) {
-		ts := tokenservice.New(a.config.c.AuthKey, time.Duration(a.config.c.AuthKeyExpired)*time.Second)
+
 		r.Use(middlewares.IsAuthorized(ts).Handle)
 
 		r.Route("/orders", func(r chi.Router) {
