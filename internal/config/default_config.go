@@ -10,7 +10,8 @@ func NewConfig() *Config {
 		LogLevel:             defaults.LogLevel,
 		DatabaseURI:          "",
 		AccrualSystemAddress: "",
-		AuthKey:              "auth-secret-key",
+		AuthKey:              defaults.AuthKey,
 		AuthKeyExpired:       defaults.AuthKeyExpired,
+		PasswordKey:          defaults.PasswordKey,
 	}
 }

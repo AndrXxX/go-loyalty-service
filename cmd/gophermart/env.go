@@ -13,6 +13,7 @@ type EnvConfig struct {
 	AccrualSystemAddress string `env:"ACCRUAL_SYSTEM_ADDRESS"`
 	AuthKey              string `env:"AUTH_SECRET_KEY"`
 	AuthKeyExpired       int    `env:"AUTH_SECRET_KEY_EXPIRED"`
+	PasswordKey          string `env:"PASSWORD_SECRET_KEY"`
 }
 
 func parseEnv(c *config.Config) {
@@ -22,6 +23,7 @@ func parseEnv(c *config.Config) {
 		AccrualSystemAddress: c.AccrualSystemAddress,
 		AuthKey:              c.AuthKey,
 		AuthKeyExpired:       c.AuthKeyExpired,
+		PasswordKey:          c.PasswordKey,
 	}
 	err := env.Parse(&cfg)
 	if err != nil {
@@ -33,4 +35,5 @@ func parseEnv(c *config.Config) {
 	c.AccrualSystemAddress = cfg.AccrualSystemAddress
 	c.AuthKey = cfg.AuthKey
 	c.AuthKeyExpired = cfg.AuthKeyExpired
+	c.PasswordKey = cfg.PasswordKey
 }

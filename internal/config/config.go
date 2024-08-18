@@ -7,4 +7,5 @@ type Config struct {
 	AccrualSystemAddress string
 	AuthKey              string
 	AuthKeyExpired       int
+	PasswordKey          string
 }
