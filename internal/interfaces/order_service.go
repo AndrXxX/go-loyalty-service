@@ -6,5 +6,6 @@ import (
 
 type OrderService interface {
 	Find(m *ormmodels.Order) *ormmodels.Order
+	FindAll(m *ormmodels.Order) []*ormmodels.Order
 	Create(m *ormmodels.Order) (*ormmodels.Order, error)
 }

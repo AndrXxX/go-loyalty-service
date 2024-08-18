@@ -26,6 +26,15 @@ func (s *orderStorage) Create(m *ormmodels.Order) (*ormmodels.Order, error) {
 	return m, nil
 }
 
+func (s *orderStorage) FindAll(m *ormmodels.Order) []*ormmodels.Order {
+	var list []*ormmodels.Order
+	result := s.db.Where(m).Find(list)
+	if result.Error != nil {
+		return make([]*ormmodels.Order, 0)
+	}
+	return list
+}
+
 func (s *orderStorage) init(ctx context.Context) error {
 	return s.db.WithContext(ctx).AutoMigrate(&ormmodels.Order{})
 }
