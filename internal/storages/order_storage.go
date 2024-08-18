@@ -28,7 +28,7 @@ func (s *orderStorage) Create(m *ormmodels.Order) (*ormmodels.Order, error) {
 
 func (s *orderStorage) FindAll(m *ormmodels.Order) []*ormmodels.Order {
 	var list []*ormmodels.Order
-	result := s.db.Where(m).Find(list)
+	result := s.db.Where(m).Order("CreatedAt desc").Find(list)
 	if result.Error != nil {
 		return make([]*ormmodels.Order, 0)
 	}
