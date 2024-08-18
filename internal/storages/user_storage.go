@@ -10,10 +10,6 @@ type userStorage struct {
 	db *gorm.DB
 }
 
-func User(db *gorm.DB) *userStorage {
-	return &userStorage{db}
-}
-
 func (s *userStorage) Find(login string) *ormmodels.User {
 	var result *ormmodels.User
 	s.db.Model(ormmodels.User{Login: login}).First(result)
@@ -28,6 +24,6 @@ func (s *userStorage) Create(u *ormmodels.User) (*ormmodels.User, error) {
 	return u, nil
 }
 
-func (s *userStorage) Init(ctx context.Context) error {
+func (s *userStorage) init(ctx context.Context) error {
 	return s.db.WithContext(ctx).AutoMigrate(&ormmodels.User{})
 }
