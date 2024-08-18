@@ -12,5 +12,5 @@ type appConfig struct {
 
 type Storage struct {
 	DB *gorm.DB
-	US interfaces.UserStorage
+	US interfaces.UserService
 }
