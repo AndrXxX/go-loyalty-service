@@ -1,6 +1,6 @@
 package accrualstatuses
 
-const registered = "REGISTERED"
-const invalid = "INVALID"
-const processing = "PROCESSING"
-const processed = "PROCESSED"
+const Registered = "REGISTERED"
+const Invalid = "INVALID"
+const Processing = "PROCESSING"
+const Processed = "PROCESSED"
