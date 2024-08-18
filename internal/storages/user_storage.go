@@ -1,6 +1,7 @@
 package storages
 
 import (
+	"context"
 	"github.com/AndrXxX/go-loyalty-service/internal/ormmodels"
 	"gorm.io/gorm"
 )
@@ -25,4 +26,8 @@ func (s *userStorage) Create(u *ormmodels.User) (*ormmodels.User, error) {
 		return nil, result.Error
 	}
 	return u, nil
+}
+
+func (s *userStorage) Init(ctx context.Context) error {
+	return s.db.WithContext(ctx).AutoMigrate(&ormmodels.User{})
 }
