@@ -23,3 +23,12 @@ func (f *storagesFactory) UserStorage(ctx context.Context) *userStorage {
 	}
 	return us
 }
+
+func (f *storagesFactory) OrderStorage(ctx context.Context) *orderStorage {
+	s := &orderStorage{f.db}
+	err := s.init(ctx)
+	if err != nil {
+		logger.Log.Error("failed to Init orderStorage", zap.Error(err))
+	}
+	return s
+}
