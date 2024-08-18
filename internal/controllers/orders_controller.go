@@ -1,6 +1,10 @@
 package controllers
 
 import (
+	"github.com/AndrXxX/go-loyalty-service/internal/enums"
+	"github.com/AndrXxX/go-loyalty-service/internal/enums/orderstatuses"
+	"github.com/AndrXxX/go-loyalty-service/internal/interfaces"
+	"github.com/AndrXxX/go-loyalty-service/internal/ormmodels"
 	"github.com/AndrXxX/go-loyalty-service/internal/services/logger"
 	"go.uber.org/zap"
 	"io"
@@ -8,11 +12,13 @@ import (
 )
 
 type ordersController struct {
-	c orderNumberChecker
+	c  orderNumberChecker
+	us interfaces.UserService
+	os interfaces.OrderService
 }
 
-func NewOrdersController(c orderNumberChecker) *ordersController {
-	return &ordersController{c}
+func NewOrdersController(c orderNumberChecker, us interfaces.UserService, os interfaces.OrderService) *ordersController {
+	return &ordersController{c, us, os}
 }
 
 func (c *ordersController) PostOrders(w http.ResponseWriter, r *http.Request) {
@@ -28,7 +34,28 @@ func (c *ordersController) PostOrders(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusUnprocessableEntity)
 		return
 	}
-	// TODO: put order to DB
+	userId := r.Context().Value(enums.UserId).(uint)
+	user := c.us.Find(&ormmodels.User{ID: userId})
+	if user == nil {
+		logger.Log.Error("failed to find user", zap.Error(err))
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	existOrder := c.os.Find(&ormmodels.Order{Number: orderNum})
+	if existOrder == nil {
+		_, err := c.os.Create(&ormmodels.Order{Number: orderNum, Author: *user, Status: orderstatuses.Waiting})
+		if err != nil {
+			logger.Log.Error("failed to create order", zap.Error(err))
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusAccepted)
+		return
+	}
+	if existOrder.Author.ID != userId {
+		w.WriteHeader(http.StatusConflict)
+		return
+	}
 	w.WriteHeader(http.StatusOK)
 }
 

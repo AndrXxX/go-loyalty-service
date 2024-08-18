@@ -35,6 +35,7 @@ func main() {
 	s := app.Storage{
 		DB: db,
 		US: sf.UserStorage(ctx),
+		OS: sf.OrderStorage(ctx),
 	}
 	if err := app.New(settings, s).Run(ctx); err != nil {
 		logger.Log.Fatal(err.Error())

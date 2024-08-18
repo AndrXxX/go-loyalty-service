@@ -91,7 +91,7 @@ func (a *app) registerAPI(r *chi.Mux) {
 		r.Use(middlewares.IsAuthorized(ts).Handle)
 
 		r.Route("/orders", func(r chi.Router) {
-			oc := controllers.NewOrdersController(luhn.Checker())
+			oc := controllers.NewOrdersController(luhn.Checker(), a.storage.US, a.storage.OS)
 			r.Post("/", oc.PostOrders)
 			r.Get("/", oc.GetOrders)
 		})
