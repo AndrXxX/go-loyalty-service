@@ -8,7 +8,7 @@ import (
 type orderConverter struct {
 }
 
-func New() *orderConverter {
+func NewOrderConverter() *orderConverter {
 	return &orderConverter{}
 }
 

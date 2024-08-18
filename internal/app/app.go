@@ -7,6 +7,7 @@ import (
 	"github.com/AndrXxX/go-loyalty-service/internal/config"
 	"github.com/AndrXxX/go-loyalty-service/internal/controllers"
 	"github.com/AndrXxX/go-loyalty-service/internal/middlewares"
+	"github.com/AndrXxX/go-loyalty-service/internal/services/converters"
 	"github.com/AndrXxX/go-loyalty-service/internal/services/hashgenerator"
 	"github.com/AndrXxX/go-loyalty-service/internal/services/logger"
 	"github.com/AndrXxX/go-loyalty-service/internal/services/luhn"
@@ -91,7 +92,8 @@ func (a *app) registerAPI(r *chi.Mux) {
 		r.Use(middlewares.IsAuthorized(ts).Handle)
 
 		r.Route("/orders", func(r chi.Router) {
-			oc := controllers.NewOrdersController(luhn.Checker(), a.storage.US, a.storage.OS)
+			oConverter := converters.NewOrderConverter()
+			oc := controllers.NewOrdersController(luhn.Checker(), a.storage.US, a.storage.OS, oConverter)
 			r.Post("/", oc.PostOrders)
 			r.Get("/", oc.GetOrders)
 		})
