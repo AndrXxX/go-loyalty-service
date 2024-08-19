@@ -31,7 +31,7 @@ func (ts *tokenService) Encrypt(userID uint) (token string, err error) {
 	return token, err
 }
 
-func (ts *tokenService) Decrypt(token string) (userId uint, err error) {
+func (ts *tokenService) Decrypt(token string) (userID uint, err error) {
 	claims := &claims{}
 	t, err := jwt.ParseWithClaims(token, claims,
 		func(t *jwt.Token) (interface{}, error) {

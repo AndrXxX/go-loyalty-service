@@ -1,5 +1,5 @@
 package middlewares
 
 type tokenService interface {
-	Decrypt(token string) (userId uint, err error)
+	Decrypt(token string) (userID uint, err error)
 }
