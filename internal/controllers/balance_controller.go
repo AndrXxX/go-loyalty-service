@@ -48,8 +48,8 @@ func (c *balanceController) Withdrawals(w http.ResponseWriter, r *http.Request) 
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	withdraws := c.ws.FindAll(&ormmodels.Withdraw{Author: *user})
-	list := c.wc.ConvertMany(withdraws)
+	withdrawals := c.ws.FindAll(&ormmodels.Withdraw{Author: *user})
+	list := c.wc.ConvertMany(withdrawals)
 	encoded, err := json.Marshal(list)
 	if err != nil {
 		logger.Log.Error("failed to encode withdraws list", zap.Error(err), zap.Uint("userId", userId))
