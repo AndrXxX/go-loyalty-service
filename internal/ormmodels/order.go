@@ -13,6 +13,6 @@ type Order struct {
 	Number    string `gorm:"uniqueIndex"`
 	Status    string
 	Accrual   *float64
-	AuthorId  uint
-	Author    User `gorm:"foreignKey:AuthorId"`
+	AuthorID  uint
+	Author    User `gorm:"foreignKey:AuthorID"`
 }

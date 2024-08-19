@@ -12,6 +12,6 @@ type Withdraw struct {
 	UpdatedAt time.Time
 	Order     string `gorm:"uniqueIndex"`
 	Sum       *float64
-	AuthorId  uint
-	Author    User `gorm:"foreignKey:AuthorId"`
+	AuthorID  uint
+	Author    User `gorm:"foreignKey:AuthorID"`
 }
