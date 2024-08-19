@@ -1,4 +1,6 @@
 package enums
 
 const AuthToken = "authToken"
-const UserID = "authUserId"
+const UserID ctxKey = "userId"
+
+type ctxKey string
