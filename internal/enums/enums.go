@@ -1,4 +1,4 @@
 package enums
 
 const AuthToken = "authToken"
-const UserID = "userId"
+const UserID = "authUserId"
