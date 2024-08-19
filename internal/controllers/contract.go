@@ -12,3 +12,7 @@ type orderNumberChecker interface {
 type orderConverter interface {
 	ConvertMany(list []*ormmodels.Order) []*entities.Order
 }
+
+type withdrawConverter interface {
+	ConvertMany(list []*ormmodels.Withdraw) []*entities.Withdraw
+}

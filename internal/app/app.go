@@ -90,15 +90,16 @@ func (a *app) registerAPI(r *chi.Mux) {
 	r.Route("/api/user", func(r chi.Router) {
 
 		r.Use(middlewares.IsAuthorized(ts).Handle)
-
+		lc := luhn.Checker()
 		r.Route("/orders", func(r chi.Router) {
 			oConverter := converters.NewOrderConverter()
-			oc := controllers.NewOrdersController(luhn.Checker(), a.storage.US, a.storage.OS, oConverter)
+			oc := controllers.NewOrdersController(lc, a.storage.US, a.storage.OS, oConverter)
 			r.Post("/", oc.PostOrders)
 			r.Get("/", oc.GetOrders)
 		})
 
-		bc := controllers.NewBalanceController()
+		wConverter := converters.NewWithdrawConverter()
+		bc := controllers.NewBalanceController(lc, a.storage.US, a.storage.OS, a.storage.WS, wConverter)
 		r.Route("/balance", func(r chi.Router) {
 			r.Get("/", bc.Balance)
 			r.Post("/withdraw", bc.Withdraw)

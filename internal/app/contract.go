@@ -14,4 +14,5 @@ type Storage struct {
 	DB *gorm.DB
 	US interfaces.UserService
 	OS interfaces.OrderService
+	WS interfaces.WithdrawService
 }

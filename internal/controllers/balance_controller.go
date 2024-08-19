@@ -1,12 +1,26 @@
 package controllers
 
-import "net/http"
+import (
+	"github.com/AndrXxX/go-loyalty-service/internal/interfaces"
+	"net/http"
+)
 
 type balanceController struct {
+	c  orderNumberChecker
+	us interfaces.UserService
+	os interfaces.OrderService
+	ws interfaces.WithdrawService
+	wc withdrawConverter
 }
 
-func NewBalanceController() *balanceController {
-	return &balanceController{}
+func NewBalanceController(
+	c orderNumberChecker,
+	us interfaces.UserService,
+	os interfaces.OrderService,
+	ws interfaces.WithdrawService,
+	wc withdrawConverter,
+) *balanceController {
+	return &balanceController{c, us, os, ws, wc}
 }
 
 func (c *balanceController) Balance(_ http.ResponseWriter, _ *http.Request) {

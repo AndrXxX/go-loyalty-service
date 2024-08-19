@@ -36,6 +36,7 @@ func main() {
 		DB: db,
 		US: sf.UserStorage(ctx),
 		OS: sf.OrderStorage(ctx),
+		WS: sf.WithdrawStorage(ctx),
 	}
 	if err := app.New(settings, s).Run(ctx); err != nil {
 		logger.Log.Fatal(err.Error())
