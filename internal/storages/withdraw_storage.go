@@ -11,11 +11,12 @@ type withdrawStorage struct {
 }
 
 func (s *withdrawStorage) Find(m *ormmodels.Withdraw) *ormmodels.Withdraw {
-	result := s.db.Model(m).First(m)
+	var found *ormmodels.Withdraw
+	result := s.db.Model(m).First(found)
 	if result.Error != nil {
 		return nil
 	}
-	return m
+	return found
 }
 
 func (s *withdrawStorage) Create(m *ormmodels.Withdraw) (*ormmodels.Withdraw, error) {

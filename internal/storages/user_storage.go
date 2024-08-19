@@ -11,11 +11,12 @@ type userStorage struct {
 }
 
 func (s *userStorage) Find(u *ormmodels.User) *ormmodels.User {
-	result := s.db.Model(u).First(u)
+	var found *ormmodels.User
+	result := s.db.Model(u).First(found)
 	if result.Error != nil {
 		return nil
 	}
-	return u
+	return found
 }
 
 func (s *userStorage) Create(u *ormmodels.User) (*ormmodels.User, error) {

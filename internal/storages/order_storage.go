@@ -11,11 +11,12 @@ type orderStorage struct {
 }
 
 func (s *orderStorage) Find(m *ormmodels.Order) *ormmodels.Order {
-	result := s.db.Model(m).First(m)
+	var found *ormmodels.Order
+	result := s.db.Model(m).First(found)
 	if result.Error != nil {
 		return nil
 	}
-	return m
+	return found
 }
 
 func (s *orderStorage) Create(m *ormmodels.Order) (*ormmodels.Order, error) {
