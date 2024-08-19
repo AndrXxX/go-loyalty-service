@@ -20,6 +20,7 @@ type balanceController struct {
 	os interfaces.OrderService
 	ws interfaces.WithdrawService
 	wc wConverter
+	bc balanceCounter
 }
 
 func NewBalanceController(
@@ -28,12 +29,33 @@ func NewBalanceController(
 	os interfaces.OrderService,
 	ws interfaces.WithdrawService,
 	wc wConverter,
+	bc balanceCounter,
 ) *balanceController {
-	return &balanceController{c, us, os, ws, wc}
+	return &balanceController{c, us, os, ws, wc, bc}
 }
 
-func (c *balanceController) Balance(_ http.ResponseWriter, _ *http.Request) {
-	// TODO
+func (c *balanceController) Balance(w http.ResponseWriter, r *http.Request) {
+	userId := r.Context().Value(enums.UserId).(uint)
+	user := c.us.Find(&ormmodels.User{ID: userId})
+	if user == nil {
+		logger.Log.Error("failed to find user", zap.Uint("userId", userId))
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	encoded, err := json.Marshal(c.bc.Count(user))
+	if err != nil {
+		logger.Log.Error("failed to encode balance", zap.Error(err), zap.Uint("userId", userId))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	_, err = w.Write(encoded)
+	if err != nil {
+		logger.Log.Error("failed to write balance response", zap.Error(err), zap.Uint("userId", userId))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", contenttypes.ApplicationJSON)
+	w.WriteHeader(http.StatusOK)
 }
 
 func (c *balanceController) Withdraw(_ http.ResponseWriter, _ *http.Request) {

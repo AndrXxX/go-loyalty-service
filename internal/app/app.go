@@ -7,6 +7,7 @@ import (
 	"github.com/AndrXxX/go-loyalty-service/internal/config"
 	"github.com/AndrXxX/go-loyalty-service/internal/controllers"
 	"github.com/AndrXxX/go-loyalty-service/internal/middlewares"
+	"github.com/AndrXxX/go-loyalty-service/internal/services/balancecounter"
 	"github.com/AndrXxX/go-loyalty-service/internal/services/converters"
 	"github.com/AndrXxX/go-loyalty-service/internal/services/hashgenerator"
 	"github.com/AndrXxX/go-loyalty-service/internal/services/logger"
@@ -99,7 +100,8 @@ func (a *app) registerAPI(r *chi.Mux) {
 		})
 
 		wConverter := converters.NewWithdrawConverter()
-		bc := controllers.NewBalanceController(lc, a.storage.US, a.storage.OS, a.storage.WS, wConverter)
+		bCounter := balancecounter.New(a.storage.WS, a.storage.OS)
+		bc := controllers.NewBalanceController(lc, a.storage.US, a.storage.OS, a.storage.WS, wConverter, bCounter)
 		r.Route("/balance", func(r chi.Router) {
 			r.Get("/", bc.Balance)
 			r.Post("/withdraw", bc.Withdraw)
