@@ -14,7 +14,7 @@ type withdrawStorage struct {
 
 func (s *withdrawStorage) Find(m *ormmodels.Withdraw) *ormmodels.Withdraw {
 	var found *ormmodels.Withdraw
-	result := s.db.Model(m).First(found)
+	result := s.db.Where(m).First(found)
 	if result.Error != nil {
 		logger.Log.Info("failed to find Withdraw", zap.Error(result.Error), zap.Any("withdraw", m))
 		return nil

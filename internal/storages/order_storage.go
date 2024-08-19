@@ -14,7 +14,7 @@ type orderStorage struct {
 
 func (s *orderStorage) Find(m *ormmodels.Order) *ormmodels.Order {
 	var found *ormmodels.Order
-	result := s.db.Model(m).First(found)
+	result := s.db.Where(m).First(found)
 	if result.Error != nil {
 		logger.Log.Info("failed to find Order", zap.Error(result.Error), zap.Any("order", m))
 		return nil
