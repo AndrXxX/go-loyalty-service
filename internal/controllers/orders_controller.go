@@ -40,7 +40,7 @@ func (c *ordersController) PostOrders(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusUnprocessableEntity)
 		return
 	}
-	userId := r.Context().Value(enums.UserId).(uint)
+	userId := r.Context().Value(enums.UserID).(uint)
 	user := c.us.Find(&ormmodels.User{ID: userId})
 	if user == nil {
 		logger.Log.Error("failed to find user", zap.Uint("userId", userId))
@@ -66,7 +66,8 @@ func (c *ordersController) PostOrders(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *ordersController) GetOrders(w http.ResponseWriter, r *http.Request) {
-	userId := r.Context().Value(enums.UserId).(uint)
+	w.Header().Set("Content-Type", contenttypes.ApplicationJSON)
+	userId := r.Context().Value(enums.UserID).(uint)
 	user := c.us.Find(&ormmodels.User{ID: userId})
 	if user == nil {
 		logger.Log.Error("failed to find user", zap.Uint("userId", userId))
@@ -87,6 +88,5 @@ func (c *ordersController) GetOrders(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", contenttypes.ApplicationJSON)
 	w.WriteHeader(http.StatusOK)
 }

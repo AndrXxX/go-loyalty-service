@@ -27,7 +27,7 @@ func (m *isAuthorized) Handle(next http.Handler) http.Handler {
 			return
 		}
 		ctx := r.Context()
-		ctx = context.WithValue(ctx, enums.UserId, userId)
+		ctx = context.WithValue(ctx, enums.UserID, userId)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

@@ -35,7 +35,7 @@ func NewBalanceController(
 }
 
 func (c *balanceController) Balance(w http.ResponseWriter, r *http.Request) {
-	userId := r.Context().Value(enums.UserId).(uint)
+	userId := r.Context().Value(enums.UserID).(uint)
 	user := c.us.Find(&ormmodels.User{ID: userId})
 	if user == nil {
 		logger.Log.Error("failed to find user", zap.Uint("userId", userId))
@@ -72,7 +72,7 @@ func (c *balanceController) Withdraw(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusUnprocessableEntity)
 		return
 	}
-	userId := r.Context().Value(enums.UserId).(uint)
+	userId := r.Context().Value(enums.UserID).(uint)
 	user := c.us.Find(&ormmodels.User{ID: userId})
 	if user == nil {
 		logger.Log.Error("failed to find user", zap.Uint("userId", userId))
@@ -94,7 +94,7 @@ func (c *balanceController) Withdraw(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *balanceController) Withdrawals(w http.ResponseWriter, r *http.Request) {
-	userId := r.Context().Value(enums.UserId).(uint)
+	userId := r.Context().Value(enums.UserID).(uint)
 	user := c.us.Find(&ormmodels.User{ID: userId})
 	if user == nil {
 		logger.Log.Error("failed to find user", zap.Uint("userId", userId))
