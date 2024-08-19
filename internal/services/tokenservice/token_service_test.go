@@ -67,8 +67,8 @@ func TestTokenService(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			ts := New(tt.fields.key, tt.fields.expired)
 			token, err := ts.Encrypt(tt.userID)
-			userId, err := ts.Decrypt(token)
-			assert.Equal(t, tt.userID, userId)
+			userID, err := ts.Decrypt(token)
+			assert.Equal(t, tt.userID, userID)
 			assert.Equal(t, tt.wantErr, err != nil)
 		})
 	}

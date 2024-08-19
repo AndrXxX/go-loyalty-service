@@ -40,10 +40,10 @@ func (c *ordersController) PostOrders(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusUnprocessableEntity)
 		return
 	}
-	userId := r.Context().Value(enums.UserID).(uint)
-	user := c.us.Find(&ormmodels.User{ID: userId})
+	userID := r.Context().Value(enums.UserID).(uint)
+	user := c.us.Find(&ormmodels.User{ID: userID})
 	if user == nil {
-		logger.Log.Error("failed to find user", zap.Uint("userId", userId))
+		logger.Log.Error("failed to find user", zap.Uint("userID", userID))
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -58,7 +58,7 @@ func (c *ordersController) PostOrders(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusAccepted)
 		return
 	}
-	if existOrder.Author.ID != userId {
+	if existOrder.Author.ID != userID {
 		w.WriteHeader(http.StatusConflict)
 		return
 	}
@@ -67,10 +67,10 @@ func (c *ordersController) PostOrders(w http.ResponseWriter, r *http.Request) {
 
 func (c *ordersController) GetOrders(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", contenttypes.ApplicationJSON)
-	userId := r.Context().Value(enums.UserID).(uint)
-	user := c.us.Find(&ormmodels.User{ID: userId})
+	userID := r.Context().Value(enums.UserID).(uint)
+	user := c.us.Find(&ormmodels.User{ID: userID})
 	if user == nil {
-		logger.Log.Error("failed to find user", zap.Uint("userId", userId))
+		logger.Log.Error("failed to find user", zap.Uint("userID", userID))
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -78,13 +78,13 @@ func (c *ordersController) GetOrders(w http.ResponseWriter, r *http.Request) {
 	list := c.oc.ConvertMany(orders)
 	encoded, err := json.Marshal(list)
 	if err != nil {
-		logger.Log.Error("failed to encode orders list", zap.Error(err), zap.Uint("userId", userId))
+		logger.Log.Error("failed to encode orders list", zap.Error(err), zap.Uint("userID", userID))
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	_, err = w.Write(encoded)
 	if err != nil {
-		logger.Log.Error("failed to write orders list response", zap.Error(err), zap.Uint("userId", userId))
+		logger.Log.Error("failed to write orders list response", zap.Error(err), zap.Uint("userID", userID))
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
