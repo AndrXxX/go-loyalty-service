@@ -58,8 +58,39 @@ func (c *balanceController) Balance(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func (c *balanceController) Withdraw(_ http.ResponseWriter, _ *http.Request) {
-	// TODO
+func (c *balanceController) Withdraw(w http.ResponseWriter, r *http.Request) {
+	var m *entities.Withdraw
+	dec := json.NewDecoder(r.Body)
+	err := dec.Decode(&m)
+	if err != nil {
+		logger.Log.Error("failed to decode withdraw body", zap.Error(err))
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if !c.c.Check(m.Order) {
+		logger.Log.Error("failed to check order number on withdraw", zap.Error(err), zap.String("orderNum", m.Order))
+		w.WriteHeader(http.StatusUnprocessableEntity)
+		return
+	}
+	userId := r.Context().Value(enums.UserId).(uint)
+	user := c.us.Find(&ormmodels.User{ID: userId})
+	if user == nil {
+		logger.Log.Error("failed to find user", zap.Uint("userId", userId))
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	balance := c.bc.Count(user)
+	if *balance.Current < *m.Sum {
+		w.WriteHeader(http.StatusPaymentRequired)
+		return
+	}
+	_, err = c.ws.Create(&ormmodels.Withdraw{Author: *user, Order: m.Order, Sum: m.Sum})
+	if err != nil {
+		logger.Log.Error("failed to create withdraw model", zap.Uint("userId", userId), zap.Any("withdraw", m), zap.Error(err))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
 }
 
 func (c *balanceController) Withdrawals(w http.ResponseWriter, r *http.Request) {
