@@ -20,14 +20,14 @@ func (m *isAuthorized) Handle(next http.Handler) http.Handler {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
-		userId, err := m.ts.Decrypt(token.Value)
+		userID, err := m.ts.Decrypt(token.Value)
 		if err != nil {
 			logger.Log.Error("failed to decrypt token from cookie", zap.Error(err))
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 		ctx := r.Context()
-		ctx = context.WithValue(ctx, enums.UserID, userId)
+		ctx = context.WithValue(ctx, enums.UserID, userID)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

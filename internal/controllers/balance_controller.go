@@ -35,22 +35,22 @@ func NewBalanceController(
 }
 
 func (c *balanceController) Balance(w http.ResponseWriter, r *http.Request) {
-	userId := r.Context().Value(enums.UserID).(uint)
-	user := c.us.Find(&ormmodels.User{ID: userId})
+	userID := r.Context().Value(enums.UserID).(uint)
+	user := c.us.Find(&ormmodels.User{ID: userID})
 	if user == nil {
-		logger.Log.Error("failed to find user", zap.Uint("userId", userId))
+		logger.Log.Error("failed to find user", zap.Uint("userID", userID))
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 	encoded, err := json.Marshal(c.bc.Count(user))
 	if err != nil {
-		logger.Log.Error("failed to encode balance", zap.Error(err), zap.Uint("userId", userId))
+		logger.Log.Error("failed to encode balance", zap.Error(err), zap.Uint("userID", userID))
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	_, err = w.Write(encoded)
 	if err != nil {
-		logger.Log.Error("failed to write balance response", zap.Error(err), zap.Uint("userId", userId))
+		logger.Log.Error("failed to write balance response", zap.Error(err), zap.Uint("userID", userID))
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -72,10 +72,10 @@ func (c *balanceController) Withdraw(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusUnprocessableEntity)
 		return
 	}
-	userId := r.Context().Value(enums.UserID).(uint)
-	user := c.us.Find(&ormmodels.User{ID: userId})
+	userID := r.Context().Value(enums.UserID).(uint)
+	user := c.us.Find(&ormmodels.User{ID: userID})
 	if user == nil {
-		logger.Log.Error("failed to find user", zap.Uint("userId", userId))
+		logger.Log.Error("failed to find user", zap.Uint("userID", userID))
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -86,7 +86,7 @@ func (c *balanceController) Withdraw(w http.ResponseWriter, r *http.Request) {
 	}
 	_, err = c.ws.Create(&ormmodels.Withdraw{Author: *user, Order: m.Order, Sum: m.Sum})
 	if err != nil {
-		logger.Log.Error("failed to create withdraw model", zap.Uint("userId", userId), zap.Any("withdraw", m), zap.Error(err))
+		logger.Log.Error("failed to create withdraw model", zap.Uint("userID", userID), zap.Any("withdraw", m), zap.Error(err))
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -94,10 +94,10 @@ func (c *balanceController) Withdraw(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *balanceController) Withdrawals(w http.ResponseWriter, r *http.Request) {
-	userId := r.Context().Value(enums.UserID).(uint)
-	user := c.us.Find(&ormmodels.User{ID: userId})
+	userID := r.Context().Value(enums.UserID).(uint)
+	user := c.us.Find(&ormmodels.User{ID: userID})
 	if user == nil {
-		logger.Log.Error("failed to find user", zap.Uint("userId", userId))
+		logger.Log.Error("failed to find user", zap.Uint("userID", userID))
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -109,13 +109,13 @@ func (c *balanceController) Withdrawals(w http.ResponseWriter, r *http.Request) 
 	}
 	encoded, err := json.Marshal(list)
 	if err != nil {
-		logger.Log.Error("failed to encode withdraws list", zap.Error(err), zap.Uint("userId", userId))
+		logger.Log.Error("failed to encode withdraws list", zap.Error(err), zap.Uint("userID", userID))
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	_, err = w.Write(encoded)
 	if err != nil {
-		logger.Log.Error("failed to write withdraws list response", zap.Error(err), zap.Uint("userId", userId))
+		logger.Log.Error("failed to write withdraws list response", zap.Error(err), zap.Uint("userID", userID))
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
