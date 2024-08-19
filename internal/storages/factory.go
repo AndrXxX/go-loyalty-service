@@ -32,3 +32,12 @@ func (f *storagesFactory) OrderStorage(ctx context.Context) *orderStorage {
 	}
 	return s
 }
+
+func (f *storagesFactory) WithdrawStorage(ctx context.Context) *withdrawStorage {
+	s := &withdrawStorage{f.db}
+	err := s.init(ctx)
+	if err != nil {
+		logger.Log.Error("failed to Init withdrawStorage", zap.Error(err))
+	}
+	return s
+}
