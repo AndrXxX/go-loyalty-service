@@ -27,9 +27,7 @@ func (c *accrualClient) Fetch(order string) (statusCode int, m *entities.Accrual
 		logger.Log.Error("failed to get accrual", zap.Error(err))
 		return resp.StatusCode, m
 	}
-	defer func(Body io.ReadCloser) {
-		_ = Body.Close()
-	}(resp.Body)
+	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
