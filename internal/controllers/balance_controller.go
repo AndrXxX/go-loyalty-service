@@ -1,16 +1,20 @@
 package controllers
 
 import (
+	"github.com/AndrXxX/go-loyalty-service/internal/entities"
 	"github.com/AndrXxX/go-loyalty-service/internal/interfaces"
+	"github.com/AndrXxX/go-loyalty-service/internal/ormmodels"
 	"net/http"
 )
+
+type wConverter ormConverter[*ormmodels.Withdraw, *entities.Withdraw]
 
 type balanceController struct {
 	c  orderNumberChecker
 	us interfaces.UserService
 	os interfaces.OrderService
 	ws interfaces.WithdrawService
-	wc withdrawConverter
+	wc wConverter
 }
 
 func NewBalanceController(
@@ -18,7 +22,7 @@ func NewBalanceController(
 	us interfaces.UserService,
 	os interfaces.OrderService,
 	ws interfaces.WithdrawService,
-	wc withdrawConverter,
+	wc wConverter,
 ) *balanceController {
 	return &balanceController{c, us, os, ws, wc}
 }

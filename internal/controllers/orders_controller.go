@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"github.com/AndrXxX/go-loyalty-service/internal/entities"
 	"github.com/AndrXxX/go-loyalty-service/internal/enums"
 	"github.com/AndrXxX/go-loyalty-service/internal/enums/contenttypes"
 	"github.com/AndrXxX/go-loyalty-service/internal/enums/orderstatuses"
@@ -13,14 +14,16 @@ import (
 	"net/http"
 )
 
+type oConverter ormConverter[*ormmodels.Order, *entities.Order]
+
 type ordersController struct {
 	c  orderNumberChecker
 	us interfaces.UserService
 	os interfaces.OrderService
-	oc orderConverter
+	oc oConverter
 }
 
-func NewOrdersController(c orderNumberChecker, us interfaces.UserService, os interfaces.OrderService, oc orderConverter) *ordersController {
+func NewOrdersController(c orderNumberChecker, us interfaces.UserService, os interfaces.OrderService, oc oConverter) *ordersController {
 	return &ordersController{c, us, os, oc}
 }
 
