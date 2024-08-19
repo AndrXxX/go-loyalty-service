@@ -28,7 +28,7 @@ func (s *withdrawStorage) Create(m *ormmodels.Withdraw) (*ormmodels.Withdraw, er
 
 func (s *withdrawStorage) FindAll(m *ormmodels.Withdraw) []*ormmodels.Withdraw {
 	var list []*ormmodels.Withdraw
-	result := s.db.Where(m).Order("created_at desc").Find(list)
+	result := s.db.Where(m).Order("created_at desc").Find(&list)
 	if result.Error != nil {
 		return make([]*ormmodels.Withdraw, 0)
 	}
