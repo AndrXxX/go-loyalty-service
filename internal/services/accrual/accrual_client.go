@@ -3,9 +3,11 @@ package accrual
 import (
 	"encoding/json"
 	"github.com/AndrXxX/go-loyalty-service/internal/entities"
+	"github.com/AndrXxX/go-loyalty-service/internal/services/gzipcompressor"
 	"github.com/AndrXxX/go-loyalty-service/internal/services/logger"
 	"go.uber.org/zap"
 	"io"
+	"strings"
 )
 
 const fetchRoute = "/api/orders/{number}"
@@ -28,6 +30,17 @@ func (c *accrualClient) Fetch(order string) (statusCode int, m *entities.Accrual
 		return resp.StatusCode, m
 	}
 	defer resp.Body.Close()
+
+	contentEncoding := resp.Header.Get("Content-Encoding")
+	sendsGzip := strings.Contains(contentEncoding, "gzip")
+	if sendsGzip {
+		cr, err := gzipcompressor.NewCompressReader(resp.Body)
+		if err != nil {
+			logger.Log.Error("Error creating gzip compressor", zap.Error(err))
+			return resp.StatusCode, m
+		}
+		resp.Body = cr
+	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
