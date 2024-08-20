@@ -35,6 +35,7 @@ func NewBalanceController(
 }
 
 func (c *balanceController) Balance(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", contenttypes.ApplicationJSON)
 	userID := r.Context().Value(enums.UserID).(uint)
 	user := c.us.Find(&ormmodels.User{ID: userID})
 	if user == nil {
@@ -54,7 +55,6 @@ func (c *balanceController) Balance(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", contenttypes.ApplicationJSON)
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -94,6 +94,7 @@ func (c *balanceController) Withdraw(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *balanceController) Withdrawals(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", contenttypes.ApplicationJSON)
 	userID := r.Context().Value(enums.UserID).(uint)
 	user := c.us.Find(&ormmodels.User{ID: userID})
 	if user == nil {
@@ -119,6 +120,5 @@ func (c *balanceController) Withdrawals(w http.ResponseWriter, r *http.Request) 
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", contenttypes.ApplicationJSON)
 	w.WriteHeader(http.StatusOK)
 }
