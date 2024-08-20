@@ -108,11 +108,9 @@ func (c *balanceController) Withdrawals(w http.ResponseWriter, r *http.Request) 
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	w.WriteHeader(http.StatusOK)
 	_, err = w.Write(encoded)
 	if err != nil {
 		logger.Log.Error("failed to write withdraws list response", zap.Error(err), zap.Uint("userID", userID))
-		w.WriteHeader(http.StatusInternalServerError)
-		return
 	}
-	w.WriteHeader(http.StatusOK)
 }
