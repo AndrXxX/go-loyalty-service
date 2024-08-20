@@ -16,10 +16,11 @@ const repeatTime = 1 * time.Second
 type updateAccrualJob struct {
 	ac accrualClient
 	o  *ormmodels.Order
+	u  updater
 }
 
-func NewUpdateAccrualJob(ac accrualClient, o *ormmodels.Order) interfaces.QueueJob {
-	return &updateAccrualJob{ac, o}
+func NewUpdateAccrualJob(ac accrualClient, o *ormmodels.Order, u updater) interfaces.QueueJob {
+	return &updateAccrualJob{ac, o, u}
 }
 
 func (j *updateAccrualJob) Execute() error {
@@ -34,23 +35,21 @@ func (j *updateAccrualJob) Execute() error {
 		switch info.Status {
 		case accrualstatuses.Invalid:
 			j.o.Status = orderstatuses.Invalid
-			// TODO: save model
-			return nil
+			return j.u.Update(j.o)
 		case accrualstatuses.Registered:
 			time.Sleep(repeatTime)
 			continue
 		case accrualstatuses.Processing:
 			if j.o.Status != orderstatuses.Processing {
 				j.o.Status = orderstatuses.Processing
-				// TODO: save model
+				_ = j.u.Update(j.o)
 			}
 			time.Sleep(repeatTime)
 			continue
 		case accrualstatuses.Processed:
 			j.o.Status = orderstatuses.Processed
 			j.o.Accrual = info.Accrual
-			// TODO: save model
-			return nil
+			return j.u.Update(j.o)
 		}
 	}
 }
