@@ -6,13 +6,16 @@ import (
 	"fmt"
 	"github.com/AndrXxX/go-loyalty-service/internal/config"
 	"github.com/AndrXxX/go-loyalty-service/internal/controllers"
+	"github.com/AndrXxX/go-loyalty-service/internal/jobs"
 	"github.com/AndrXxX/go-loyalty-service/internal/middlewares"
+	"github.com/AndrXxX/go-loyalty-service/internal/services/accrual"
 	"github.com/AndrXxX/go-loyalty-service/internal/services/balancecounter"
 	"github.com/AndrXxX/go-loyalty-service/internal/services/converters"
 	"github.com/AndrXxX/go-loyalty-service/internal/services/hashgenerator"
 	"github.com/AndrXxX/go-loyalty-service/internal/services/logger"
 	"github.com/AndrXxX/go-loyalty-service/internal/services/luhn"
 	"github.com/AndrXxX/go-loyalty-service/internal/services/tokenservice"
+	"github.com/AndrXxX/go-loyalty-service/internal/services/urlbuilder"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"go.uber.org/zap"
@@ -100,7 +103,9 @@ func (a *app) registerAPI(r *chi.Mux) {
 		lc := luhn.Checker()
 		r.Route("/orders", func(r chi.Router) {
 			oConverter := converters.NewOrderConverter()
-			oc := controllers.NewOrdersController(lc, a.storage.US, a.storage.OS, oConverter)
+			ub := urlbuilder.New(a.config.c.AccrualSystemAddress)
+			jf := jobs.Factory(accrual.NewClient(http.DefaultClient, ub), a.storage.OS)
+			oc := controllers.NewOrdersController(lc, a.storage.US, a.storage.OS, oConverter, a.qr, jf)
 			r.Post("/", oc.PostOrders)
 			r.Get("/", oc.GetOrders)
 		})

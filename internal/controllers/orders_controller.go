@@ -21,10 +21,19 @@ type ordersController struct {
 	us interfaces.UserService
 	os interfaces.OrderService
 	oc oConverter
+	qr queueRunner
+	jf jobsFactory
 }
 
-func NewOrdersController(c orderNumberChecker, us interfaces.UserService, os interfaces.OrderService, oc oConverter) *ordersController {
-	return &ordersController{c, us, os, oc}
+func NewOrdersController(
+	c orderNumberChecker,
+	us interfaces.UserService,
+	os interfaces.OrderService,
+	oc oConverter,
+	qr queueRunner,
+	jf jobsFactory,
+) *ordersController {
+	return &ordersController{c, us, os, oc, qr, jf}
 }
 
 func (c *ordersController) PostOrders(w http.ResponseWriter, r *http.Request) {
@@ -49,9 +58,14 @@ func (c *ordersController) PostOrders(w http.ResponseWriter, r *http.Request) {
 	}
 	existOrder := c.os.Find(&ormmodels.Order{Number: orderNum})
 	if existOrder == nil {
-		_, err := c.os.Create(&ormmodels.Order{Number: orderNum, Author: *user, Status: orderstatuses.Waiting})
+		order, err := c.os.Create(&ormmodels.Order{Number: orderNum, Author: *user, Status: orderstatuses.Waiting})
 		if err != nil {
 			logger.Log.Error("failed to create order", zap.Error(err))
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		if err = c.qr.AddJob(c.jf.NewUpdateAccrualJob(order)); err != nil {
+			logger.Log.Error("failed to add UpdateAccrualJob", zap.Error(err))
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}

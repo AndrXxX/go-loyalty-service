@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/AndrXxX/go-loyalty-service/internal/entities"
+	"github.com/AndrXxX/go-loyalty-service/internal/interfaces"
 	"github.com/AndrXxX/go-loyalty-service/internal/ormmodels"
 )
 
@@ -15,4 +16,12 @@ type ormConverter[source any, target any] interface {
 
 type balanceCounter interface {
 	Count(u *ormmodels.User) *entities.Balance
+}
+
+type queueRunner interface {
+	AddJob(interfaces.QueueJob) error
+}
+
+type jobsFactory interface {
+	NewUpdateAccrualJob(o *ormmodels.Order) interfaces.QueueJob
 }
