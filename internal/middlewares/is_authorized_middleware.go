@@ -16,13 +16,13 @@ func (m *isAuthorized) Handle(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		token, err := r.Cookie(enums.AuthToken)
 		if err != nil {
-			logger.Log.Error("failed to get auth token cookie", zap.Error(err))
+			logger.Log.Info("failed to get auth token cookie", zap.Error(err))
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 		userID, err := m.ts.Decrypt(token.Value)
 		if err != nil {
-			logger.Log.Error("failed to decrypt token from cookie", zap.Error(err))
+			logger.Log.Info("failed to decrypt token from cookie", zap.Error(err))
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}

@@ -35,7 +35,7 @@ func (c *authController) Register(w http.ResponseWriter, r *http.Request) {
 	}
 	created, err := c.us.Create(&ormmodels.User{Login: u.Login, Password: c.hg.Generate([]byte(u.Password))})
 	if err != nil {
-		logger.Log.Error("failed to create user on register request", zap.Error(err))
+		logger.Log.Info("failed to create user on register request", zap.Error(err))
 		w.WriteHeader(http.StatusConflict)
 		return
 	}
@@ -73,11 +73,11 @@ func (c *authController) fetchUser(r *http.Request) *entities.User {
 	dec := json.NewDecoder(r.Body)
 	err := dec.Decode(&u)
 	if err != nil {
-		logger.Log.Error("failed to decode request", zap.Error(err))
+		logger.Log.Info("failed to decode request", zap.Error(err))
 		return nil
 	}
 	if _, err := govalidator.ValidateStruct(u); err != nil {
-		logger.Log.Error("failed to validate request", zap.Error(err))
+		logger.Log.Info("failed to validate request", zap.Error(err))
 		return nil
 	}
 	return u
@@ -86,7 +86,7 @@ func (c *authController) fetchUser(r *http.Request) *entities.User {
 func (c *authController) setAuthToken(w http.ResponseWriter, user *ormmodels.User) error {
 	token, err := c.ts.Encrypt(user.ID)
 	if err != nil {
-		logger.Log.Error("failed to encrypt token on request", zap.Error(err))
+		logger.Log.Info("failed to encrypt token on request", zap.Error(err))
 		return err
 	}
 	http.SetCookie(w, &http.Cookie{Name: enums.AuthToken, Value: token})

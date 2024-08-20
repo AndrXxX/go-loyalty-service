@@ -45,14 +45,14 @@ func (c *ordersController) PostOrders(w http.ResponseWriter, r *http.Request) {
 	}
 	orderNum := string(bytes)
 	if !c.c.Check(orderNum) {
-		logger.Log.Error("failed to check order number", zap.Error(err), zap.String("orderNum", orderNum))
+		logger.Log.Info("failed to check order number", zap.Error(err), zap.String("orderNum", orderNum))
 		w.WriteHeader(http.StatusUnprocessableEntity)
 		return
 	}
 	userID := r.Context().Value(enums.UserID).(uint)
 	user := c.us.Find(&ormmodels.User{ID: userID})
 	if user == nil {
-		logger.Log.Error("failed to find user", zap.Uint("userID", userID))
+		logger.Log.Info("failed to find user", zap.Uint("userID", userID))
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -84,7 +84,7 @@ func (c *ordersController) GetOrders(w http.ResponseWriter, r *http.Request) {
 	userID := r.Context().Value(enums.UserID).(uint)
 	user := c.us.Find(&ormmodels.User{ID: userID})
 	if user == nil {
-		logger.Log.Error("failed to find user", zap.Uint("userID", userID))
+		logger.Log.Info("failed to find user", zap.Uint("userID", userID))
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}

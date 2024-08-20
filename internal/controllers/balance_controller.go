@@ -68,14 +68,14 @@ func (c *balanceController) Withdraw(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if !c.c.Check(m.Order) {
-		logger.Log.Error("failed to check order number on withdraw", zap.Error(err), zap.String("orderNum", m.Order))
+		logger.Log.Info("failed to check order number on withdraw", zap.Error(err), zap.String("orderNum", m.Order))
 		w.WriteHeader(http.StatusUnprocessableEntity)
 		return
 	}
 	userID := r.Context().Value(enums.UserID).(uint)
 	user := c.us.Find(&ormmodels.User{ID: userID})
 	if user == nil {
-		logger.Log.Error("failed to find user", zap.Uint("userID", userID))
+		logger.Log.Info("failed to find user", zap.Uint("userID", userID))
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
