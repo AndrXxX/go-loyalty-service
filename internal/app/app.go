@@ -94,12 +94,15 @@ func (a *app) registerAPI(r *chi.Mux) {
 	ts := tokenservice.New(a.config.c.AuthKey, time.Duration(a.config.c.AuthKeyExpired)*time.Second)
 
 	ac := controllers.NewAuthController(a.storage.US, hg, ts)
-	r.Post("/api/user/register", ac.Register)
-	r.Post("/api/user/login", ac.Login)
-	r.Use(middlewares.CompressGzip().Handle)
+
+	r.Group(func(r chi.Router) {
+		r.Use(middlewares.CompressGzip().Handle)
+		r.Post("/api/user/register", ac.Register)
+		r.Post("/api/user/login", ac.Login)
+	})
 
 	r.Route("/api/user", func(r chi.Router) {
-
+		r.Use(middlewares.CompressGzip().Handle)
 		r.Use(middlewares.IsAuthorized(ts).Handle)
 		lc := luhn.Checker()
 		r.Route("/orders", func(r chi.Router) {
