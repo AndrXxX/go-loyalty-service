@@ -82,13 +82,7 @@ func (c *ordersController) PostOrders(w http.ResponseWriter, r *http.Request) {
 func (c *ordersController) GetOrders(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", contenttypes.ApplicationJSON)
 	userID := r.Context().Value(enums.UserID).(uint)
-	user := c.us.Find(&ormmodels.User{ID: userID})
-	if user == nil {
-		logger.Log.Info("failed to find user", zap.Uint("userID", userID))
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
-	orders := c.os.FindAll(&ormmodels.Order{Author: *user})
+	orders := c.os.FindAll(&ormmodels.Order{AuthorID: userID})
 	list := c.oc.ConvertMany(orders)
 	encoded, err := json.Marshal(list)
 	if err != nil {

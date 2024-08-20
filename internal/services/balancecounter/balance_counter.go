@@ -19,11 +19,11 @@ func (c *balanceCounter) Count(u *ormmodels.User) *entities.Balance {
 	var b entities.Balance
 	var oSum float64
 	var wSum float64
-	wList := c.ws.FindAll(&ormmodels.Withdraw{Author: *u})
+	wList := c.ws.FindAll(&ormmodels.Withdraw{AuthorID: u.ID})
 	for _, w := range wList {
 		wSum += *w.Sum
 	}
-	oList := c.os.FindAll(&ormmodels.Order{Author: *u})
+	oList := c.os.FindAll(&ormmodels.Order{AuthorID: u.ID})
 	for _, o := range oList {
 		if o.Accrual != nil {
 			oSum += *o.Accrual

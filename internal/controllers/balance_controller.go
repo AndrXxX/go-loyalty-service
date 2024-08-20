@@ -96,13 +96,7 @@ func (c *balanceController) Withdraw(w http.ResponseWriter, r *http.Request) {
 func (c *balanceController) Withdrawals(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", contenttypes.ApplicationJSON)
 	userID := r.Context().Value(enums.UserID).(uint)
-	user := c.us.Find(&ormmodels.User{ID: userID})
-	if user == nil {
-		logger.Log.Error("failed to find user", zap.Uint("userID", userID))
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
-	withdrawals := c.ws.FindAll(&ormmodels.Withdraw{Author: *user})
+	withdrawals := c.ws.FindAll(&ormmodels.Withdraw{AuthorID: userID})
 	list := c.wc.ConvertMany(withdrawals)
 	if len(list) == 0 {
 		w.WriteHeader(http.StatusNoContent)
