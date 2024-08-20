@@ -1,4 +1,4 @@
-package metricurlbuilder
+package urlbuilder
 
 import (
 	"github.com/stretchr/testify/assert"

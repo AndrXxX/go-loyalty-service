@@ -1,4 +1,4 @@
-package metricurlbuilder
+package urlbuilder
 
 import (
 	"github.com/AndrXxX/go-loyalty-service/internal/services/logger"
