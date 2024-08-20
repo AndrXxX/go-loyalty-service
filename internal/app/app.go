@@ -26,16 +26,22 @@ const shutdownTimeout = 5 * time.Second
 type app struct {
 	config  appConfig
 	storage Storage
+	qr      queueRunner
 }
 
-func New(c *config.Config, s Storage) *app {
+func New(c *config.Config, s Storage, qr queueRunner) *app {
 	return &app{
 		config:  appConfig{c},
 		storage: s,
+		qr:      qr,
 	}
 }
 
 func (a *app) Run(commonCtx context.Context) error {
+	err := a.qr.Run()
+	if err != nil {
+		return err
+	}
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)

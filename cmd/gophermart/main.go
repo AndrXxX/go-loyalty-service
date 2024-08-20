@@ -6,12 +6,14 @@ import (
 	"github.com/AndrXxX/go-loyalty-service/internal/config"
 	"github.com/AndrXxX/go-loyalty-service/internal/services/dbprovider"
 	"github.com/AndrXxX/go-loyalty-service/internal/services/logger"
+	"github.com/AndrXxX/go-loyalty-service/internal/services/queue"
 	"github.com/AndrXxX/go-loyalty-service/internal/storages"
 	"github.com/asaskevich/govalidator"
 	"go.uber.org/zap"
 	"log"
 	"os/signal"
 	"syscall"
+	"time"
 )
 
 func main() {
@@ -38,7 +40,8 @@ func main() {
 		OS: sf.OrderStorage(ctx),
 		WS: sf.WithdrawStorage(ctx),
 	}
-	if err := app.New(settings, s).Run(ctx); err != nil {
+	qr := queue.NewRunner(time.Second).SetWorkersCount(5)
+	if err := app.New(settings, s, qr).Run(ctx); err != nil {
 		logger.Log.Fatal(err.Error())
 	}
 }
