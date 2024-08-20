@@ -3,6 +3,7 @@ package queue
 import (
 	"context"
 	"errors"
+	"github.com/AndrXxX/go-loyalty-service/internal/interfaces"
 	"github.com/AndrXxX/go-loyalty-service/internal/services/logger"
 	"sync"
 	"time"
@@ -17,7 +18,7 @@ type runner struct {
 	si      time.Duration
 	workers []*worker
 	s       state
-	jobs    chan queueJob
+	jobs    chan interfaces.QueueJob
 	wg      sync.WaitGroup
 }
 
@@ -29,11 +30,12 @@ func NewRunner(sleepInterval time.Duration) *runner {
 	}
 }
 
-func (r *runner) SetWorkersCount(count int) {
+func (r *runner) SetWorkersCount(count int) *runner {
 	r.workers = make([]*worker, count)
+	return r
 }
 
-func (r *runner) AddJob(j queueJob) error {
+func (r *runner) AddJob(j interfaces.QueueJob) error {
 	if !r.s.running {
 		return errors.New("trying to add a queue before starting runner")
 	}
@@ -48,7 +50,7 @@ func (r *runner) Run() error {
 	if r.s.running {
 		return errors.New("already running")
 	}
-	r.jobs = make(chan queueJob)
+	r.jobs = make(chan interfaces.QueueJob)
 	logger.Log.Info("Queue running")
 	r.s.running = true
 	r.s.stopping = false

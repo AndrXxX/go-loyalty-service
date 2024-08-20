@@ -1,6 +1,7 @@
 package queue
 
 import (
+	"github.com/AndrXxX/go-loyalty-service/internal/interfaces"
 	"github.com/AndrXxX/go-loyalty-service/internal/services/logger"
 	"go.uber.org/zap"
 )
@@ -8,7 +9,7 @@ import (
 type worker struct {
 }
 
-func (w *worker) Process(jobs <-chan queueJob) {
+func (w *worker) Process(jobs <-chan interfaces.QueueJob) {
 	for job := range jobs {
 		err := job.Execute()
 		if err != nil {
