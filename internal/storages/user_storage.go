@@ -13,13 +13,13 @@ type userStorage struct {
 }
 
 func (s *userStorage) Find(u *ormmodels.User) *ormmodels.User {
-	var found *ormmodels.User
-	result := s.db.Where(u).First(found)
+	found := ormmodels.User{}
+	result := s.db.Where(&u).First(&found)
 	if result.Error != nil {
 		logger.Log.Info("failed to find user", zap.Error(result.Error), zap.Any("user", u))
 		return nil
 	}
-	return found
+	return &found
 }
 
 func (s *userStorage) Create(u *ormmodels.User) (*ormmodels.User, error) {
