@@ -49,13 +49,11 @@ func (c *balanceController) Balance(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	w.WriteHeader(http.StatusOK)
 	_, err = w.Write(encoded)
 	if err != nil {
 		logger.Log.Error("failed to write balance response", zap.Error(err), zap.Uint("userID", userID))
-		w.WriteHeader(http.StatusInternalServerError)
-		return
 	}
-	w.WriteHeader(http.StatusOK)
 }
 
 func (c *balanceController) Withdraw(w http.ResponseWriter, r *http.Request) {
@@ -84,13 +82,11 @@ func (c *balanceController) Withdraw(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusPaymentRequired)
 		return
 	}
+	w.WriteHeader(http.StatusOK)
 	_, err = c.ws.Create(&ormmodels.Withdraw{AuthorID: userID, Order: m.Order, Sum: m.Sum})
 	if err != nil {
 		logger.Log.Error("failed to create withdraw model", zap.Uint("userID", userID), zap.Any("withdraw", m), zap.Error(err))
-		w.WriteHeader(http.StatusInternalServerError)
-		return
 	}
-	w.WriteHeader(http.StatusOK)
 }
 
 func (c *balanceController) Withdrawals(w http.ResponseWriter, r *http.Request) {
