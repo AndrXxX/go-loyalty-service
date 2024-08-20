@@ -31,6 +31,15 @@ func (s *orderStorage) Create(m *ormmodels.Order) (*ormmodels.Order, error) {
 	return m, nil
 }
 
+func (s *orderStorage) Update(m *ormmodels.Order) error {
+	result := s.db.Save(&m)
+	if result.Error != nil {
+		logger.Log.Info("failed to update Order", zap.Error(result.Error), zap.Any("order", m))
+		return result.Error
+	}
+	return nil
+}
+
 func (s *orderStorage) FindAll(m *ormmodels.Order) []*ormmodels.Order {
 	var list []*ormmodels.Order
 	result := s.db.Where(m).Order("created_at desc").Find(&list)
