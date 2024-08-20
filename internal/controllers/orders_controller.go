@@ -58,7 +58,7 @@ func (c *ordersController) PostOrders(w http.ResponseWriter, r *http.Request) {
 	}
 	existOrder := c.os.Find(&ormmodels.Order{Number: orderNum})
 	if existOrder == nil {
-		order, err := c.os.Create(&ormmodels.Order{Number: orderNum, Author: *user, Status: orderstatuses.Waiting})
+		order, err := c.os.Create(&ormmodels.Order{Number: orderNum, AuthorID: user.ID, Status: orderstatuses.Waiting})
 		if err != nil {
 			logger.Log.Error("failed to create order", zap.Error(err))
 			w.WriteHeader(http.StatusInternalServerError)
@@ -72,7 +72,7 @@ func (c *ordersController) PostOrders(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusAccepted)
 		return
 	}
-	if existOrder.Author.ID != userID {
+	if existOrder.AuthorID != userID {
 		w.WriteHeader(http.StatusConflict)
 		return
 	}

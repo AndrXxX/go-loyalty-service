@@ -84,7 +84,7 @@ func (c *balanceController) Withdraw(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusPaymentRequired)
 		return
 	}
-	_, err = c.ws.Create(&ormmodels.Withdraw{Author: *user, Order: m.Order, Sum: m.Sum})
+	_, err = c.ws.Create(&ormmodels.Withdraw{AuthorID: userID, Order: m.Order, Sum: m.Sum})
 	if err != nil {
 		logger.Log.Error("failed to create withdraw model", zap.Uint("userID", userID), zap.Any("withdraw", m), zap.Error(err))
 		w.WriteHeader(http.StatusInternalServerError)
