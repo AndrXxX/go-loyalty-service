@@ -96,6 +96,7 @@ func (a *app) registerAPI(r *chi.Mux) {
 	ac := controllers.NewAuthController(a.storage.US, hg, ts)
 	r.Post("/api/user/register", ac.Register)
 	r.Post("/api/user/login", ac.Login)
+	r.Use(middlewares.CompressGzip().Handle)
 
 	r.Route("/api/user", func(r chi.Router) {
 
