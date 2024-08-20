@@ -50,7 +50,7 @@ func (c *accrualClient) Fetch(order string) (statusCode int, m *entities.Accrual
 
 	err = json.Unmarshal(body, &m)
 	if err != nil {
-		logger.Log.Error("failed to unmarshal body on get accrual", zap.Error(err))
+		logger.Log.Error("failed to unmarshal body on get accrual", zap.Error(err), zap.String("body", string(body)))
 		return resp.StatusCode, m
 	}
 
