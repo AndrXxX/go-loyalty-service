@@ -9,6 +9,6 @@ type accrualClient interface {
 	Fetch(order string) (statusCode int, m *entities.Accrual)
 }
 
-type updater interface {
+type orderUpdater interface {
 	Update(m *ormmodels.Order) error
 }

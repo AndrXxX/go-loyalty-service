@@ -3,7 +3,6 @@ package jobs
 import (
 	"github.com/AndrXxX/go-loyalty-service/internal/enums/accrualstatuses"
 	"github.com/AndrXxX/go-loyalty-service/internal/enums/orderstatuses"
-	"github.com/AndrXxX/go-loyalty-service/internal/interfaces"
 	"github.com/AndrXxX/go-loyalty-service/internal/ormmodels"
 	"github.com/AndrXxX/go-loyalty-service/internal/services/logger"
 	"go.uber.org/zap"
@@ -16,11 +15,7 @@ const repeatTime = 1 * time.Second
 type updateAccrualJob struct {
 	ac accrualClient
 	o  *ormmodels.Order
-	u  updater
-}
-
-func NewUpdateAccrualJob(ac accrualClient, o *ormmodels.Order, u updater) interfaces.QueueJob {
-	return &updateAccrualJob{ac, o, u}
+	u  orderUpdater
 }
 
 func (j *updateAccrualJob) Execute() error {
