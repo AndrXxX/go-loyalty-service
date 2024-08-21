@@ -57,6 +57,10 @@ func TestNewMetricURLBuilder(t *testing.T) {
 		want *urlBuilder
 	}{
 		{
+			host: ":)",
+			want: nil,
+		},
+		{
 			host: "host",
 			want: &urlBuilder{host: "http://host"},
 		},
