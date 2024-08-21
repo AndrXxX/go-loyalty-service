@@ -102,8 +102,8 @@ func (a *app) registerAPI(r *chi.Mux) {
 	})
 
 	r.Route("/api/user", func(r chi.Router) {
-		r.Use(middlewares.CompressGzip().Handle)
 		r.Use(middlewares.IsAuthorized(ts).Handle)
+		r.Use(middlewares.CompressGzip().Handle)
 		lc := luhn.Checker()
 		r.Route("/orders", func(r chi.Router) {
 			oConverter := converters.NewOrderConverter()
