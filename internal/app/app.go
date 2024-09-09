@@ -41,15 +41,30 @@ func New(c *config.Config, s Storage, qr queueRunner) *app {
 }
 
 func (a *app) Run(commonCtx context.Context) error {
-	err := a.qr.Run()
+	err := a.runQueue()
 	if err != nil {
 		return err
 	}
+
+	srv := a.runServer(a.getRouter())
+
+	<-commonCtx.Done()
+	return a.shutdown(srv)
+}
+
+func (a *app) runQueue() error {
+	return a.qr.Run()
+}
+
+func (a *app) getRouter() *chi.Mux {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	a.registerAPI(r)
+	return r
+}
 
+func (a *app) runServer(r *chi.Mux) *http.Server {
 	srv := &http.Server{Addr: a.config.c.RunAddress, Handler: r}
 
 	go func() {
@@ -59,8 +74,10 @@ func (a *app) Run(commonCtx context.Context) error {
 	}()
 
 	logger.Log.Info("listening", zap.String("host", a.config.c.RunAddress))
+	return srv
+}
 
-	<-commonCtx.Done()
+func (a *app) shutdown(srv *http.Server) error {
 	logger.Log.Info("shutting down server gracefully")
 
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
