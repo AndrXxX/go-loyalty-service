@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/AndrXxX/go-loyalty-service/internal/entities"
 	"github.com/AndrXxX/go-loyalty-service/internal/enums"
 	"github.com/AndrXxX/go-loyalty-service/internal/interfaces"
@@ -23,8 +24,9 @@ func NewAuthController(us interfaces.UserService, hg interfaces.HashGenerator, t
 }
 
 func (c *authController) Register(w http.ResponseWriter, r *http.Request) {
-	u := c.fetchUser(r)
-	if u == nil {
+	u, err := c.fetchUser(r)
+	if err != nil {
+		logger.Log.Info("failed to fetchUser", zap.Error(err))
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -47,8 +49,9 @@ func (c *authController) Register(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *authController) Login(w http.ResponseWriter, r *http.Request) {
-	u := c.fetchUser(r)
-	if u == nil {
+	u, err := c.fetchUser(r)
+	if err != nil {
+		logger.Log.Info("failed to fetchUser", zap.Error(err))
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -68,19 +71,17 @@ func (c *authController) Login(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func (c *authController) fetchUser(r *http.Request) *entities.User {
+func (c *authController) fetchUser(r *http.Request) (*entities.User, error) {
 	var u *entities.User
 	dec := json.NewDecoder(r.Body)
 	err := dec.Decode(&u)
 	if err != nil {
-		logger.Log.Info("failed to decode request", zap.Error(err))
-		return nil
+		return nil, fmt.Errorf("failed to decode request: %w", err)
 	}
 	if _, err := govalidator.ValidateStruct(u); err != nil {
-		logger.Log.Info("failed to validate request", zap.Error(err))
-		return nil
+		return nil, fmt.Errorf("failed to validate request: %w", err)
 	}
-	return u
+	return u, nil
 }
 
 func (c *authController) setAuthToken(w http.ResponseWriter, user *ormmodels.User) error {
