@@ -39,9 +39,6 @@ func (r *runner) AddJob(j interfaces.QueueJob) error {
 	if !r.s.running {
 		return errors.New("trying to add a queue before starting runner")
 	}
-	go func() {
-
-	}()
 	r.jobs <- j
 	return nil
 }
