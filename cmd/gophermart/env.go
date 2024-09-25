@@ -7,7 +7,7 @@ import (
 	"go.uber.org/zap"
 )
 
-type EnvConfig struct {
+type Config struct {
 	RunAddress           string `env:"RUN_ADDRESS"`
 	DatabaseURI          string `env:"DATABASE_URI"`
 	AccrualSystemAddress string `env:"ACCRUAL_SYSTEM_ADDRESS"`
@@ -17,7 +17,7 @@ type EnvConfig struct {
 }
 
 func parseEnv(c *config.Config) {
-	cfg := EnvConfig{
+	cfg := Config{
 		RunAddress:           c.RunAddress,
 		DatabaseURI:          c.DatabaseURI,
 		AccrualSystemAddress: c.AccrualSystemAddress,
@@ -27,7 +27,7 @@ func parseEnv(c *config.Config) {
 	}
 	err := env.Parse(&cfg)
 	if err != nil {
-		logger.Log.Error("Error on parse EnvConfig", zap.Error(err))
+		logger.Log.Error("Error on parse Config", zap.Error(err))
 		return
 	}
 	c.RunAddress = cfg.RunAddress

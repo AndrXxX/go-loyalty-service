@@ -62,13 +62,56 @@ func TestTokenService(t *testing.T) {
 			userID:  56,
 			wantErr: false,
 		},
+		{
+			name:    "TEST OK userID 56 with key test2",
+			fields:  fields{key: "test2", expired: 10 * time.Second},
+			userID:  56,
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ts := New(tt.fields.key, tt.fields.expired)
 			token, err := ts.Encrypt(tt.userID)
+			print(token)
 			assert.Equal(t, tt.wantErr, err != nil)
 			userID, err := ts.Decrypt(token)
+			assert.Equal(t, tt.userID, userID)
+			assert.Equal(t, tt.wantErr, err != nil)
+		})
+	}
+}
+
+func TestTokenServiceDecrypt(t *testing.T) {
+	tests := []struct {
+		name    string
+		token   string
+		wantErr bool
+		userID  uint
+	}{
+		{
+			name:    "TEST error",
+			token:   "test",
+			wantErr: true,
+			userID:  0,
+		},
+		{
+			name:    "TEST with expired token",
+			token:   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjQyMjkyODIsIlVzZXJJRCI6NTZ9.n9lhAFN7tx9lF3P3stsuQOxz4Brp_XoqbLXZwh_MR_M",
+			wantErr: true,
+			userID:  0,
+		},
+		{
+			name:    "TEST with expired token",
+			token:   "eyJhbGciOiIxMjMxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjQyMzAwODMsIlVzZXJJRCI6NTZ9.V20A3x5H3pOL1ktzA7Ei2eEXD7FkZXCvqdZ70RC7qBU=",
+			wantErr: true,
+			userID:  0,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ts := New("", time.Second)
+			userID, err := ts.Decrypt(tt.token)
 			assert.Equal(t, tt.userID, userID)
 			assert.Equal(t, tt.wantErr, err != nil)
 		})
